@@ -1,0 +1,170 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #fafaf8;
+  --ink: #111111;
+  --ink-mid: #4a4a4a;
+  --ink-faint: #aaaaaa;
+  --accent: #b85c38;
+  --accent-dark: #8a3f22;
+  --rule: #e4e4e0;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-weight: 300;
+}
+
+/* ── Verb links ───────────────────────────────────────────── */
+.verb-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-style: italic;
+  position: relative;
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+.verb-link::after {
+  content: '';
+  position: absolute;
+  bottom: 3px; left: 0; right: 0;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.35;
+  transition: opacity 0.3s, height 0.2s, bottom 0.2s;
+}
+.verb-link:hover { color: var(--accent-dark); }
+.verb-link:hover::after { opacity: 1; height: 1.5px; bottom: 1px; }
+.verb-link sup {
+  font-style: normal;
+  font-size: 0.38em;
+  vertical-align: super;
+  margin-left: 0.1em;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.verb-link:hover sup { opacity: 1; }
+
+/* ── Writing list hover ───────────────────────────────────── */
+.post-link:hover .post-title { color: var(--accent); }
+
+/* ── MDX prose ────────────────────────────────────────────── */
+.prose-writing {
+  max-width: 68ch;
+  font-size: 1.0625rem;
+  line-height: 1.78;
+  color: var(--ink-mid);
+}
+.prose-writing p { margin-bottom: 1.6em; }
+.prose-writing h2 {
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 2.8em 0 0.8em;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.prose-writing h3 {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 2.2em 0 0.6em;
+}
+.prose-writing a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 0.5px;
+  transition: color 0.2s;
+}
+.prose-writing a:hover { color: var(--accent-dark); }
+.prose-writing blockquote {
+  font-style: italic;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--ink);
+  border-left: 1.5px solid var(--accent);
+  padding-left: 1.5rem;
+  margin: 2.2em 0;
+}
+.prose-writing code {
+  font-size: 0.875em;
+  background: #f0ede8;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  color: var(--accent-dark);
+  font-family: ui-monospace, monospace;
+}
+.prose-writing pre {
+  background: #1a1916;
+  color: #e8e2d9;
+  padding: 1.5rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 2em 0;
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+.prose-writing pre code { background: none; color: inherit; padding: 0; }
+.prose-writing hr { border: none; border-top: 1px solid var(--rule); margin: 3em 0; }
+.prose-writing ul, .prose-writing ol { padding-left: 1.4rem; margin-bottom: 1.6em; }
+.prose-writing li { margin-bottom: 0.5em; }
+.prose-writing strong { font-weight: 500; color: var(--ink); }
+.prose-writing img { max-width: 100%; border-radius: 4px; margin: 2em 0; }
+
+/* ── Marquee ──────────────────────────────────────────────── */
+.marquee-strip {
+  border-top: 1px solid var(--rule);
+  padding: 0.9rem 0;
+  overflow: hidden;
+  position: relative;
+}
+.marquee-strip::before, .marquee-strip::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; width: 80px;
+  z-index: 2; pointer-events: none;
+}
+.marquee-strip::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
+.marquee-strip::after  { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 45s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+.marquee-item { display: flex; align-items: center; gap: 0.6rem; padding: 0 2.2rem; white-space: nowrap; }
+.marquee-type { font-size: 0.58rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); }
+.marquee-title { font-style: italic; font-weight: 300; font-size: 0.92rem; color: var(--ink-mid); }
+.marquee-sep { font-size: 0.7rem; color: var(--rule); user-select: none; }
+
+/* ── Animations ───────────────────────────────────────────── */
+@keyframes marqueeScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.anim-1 { opacity: 0; animation: fadeUp 0.7s ease forwards 0.05s; }
+.anim-2 { opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s; }
+.anim-3 { opacity: 0; animation: fadeUp 0.85s ease forwards 0.38s; }
+.anim-4 { opacity: 0; animation: fadeUp 0.8s ease forwards 0.6s; }
+.anim-5 { opacity: 0; animation: fadeIn 1.2s ease forwards 0.7s; }
+
+/* ── Project cards ────────────────────────────────────────── */
+.project-card { transition: background 0.2s; }
+.project-card:hover { background: #f5f0e9 !important; }
