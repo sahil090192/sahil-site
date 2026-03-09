@@ -32,7 +32,7 @@ export default function PageNav({ page }: { page?: string }) {
       )}
 
       {/* Right: nav links */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
+      <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: '2.5rem' }}>
         {navLinks.map(link => {
           const isActive = page?.toLowerCase() === link.label
           return (

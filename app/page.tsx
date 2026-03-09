@@ -33,7 +33,7 @@ export default function Home() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--bg)' }}>
       <PageNav />
-      <main style={{
+      <main className="hero-grid" style={{
         flex: 1,
         display: 'grid',
         gridTemplateColumns: '1fr min(420px, 38vw)',
@@ -117,7 +117,7 @@ export default function Home() {
         </div>
 
         {/* ── Galton board ── */}
-        <div className="anim-5" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="anim-5 galton-col" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <GaltonBoard />
         </div>
       </main>

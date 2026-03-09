@@ -59,6 +59,8 @@ function makeBall(): Ball {
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
+const BOARD_SCALE = 1.2   // render 20% larger
+
 export default function GaltonBoard() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -67,12 +69,14 @@ export default function GaltonBoard() {
     if (!canvas) return
 
     const dpr = window.devicePixelRatio || 1
-    canvas.width  = W * dpr
-    canvas.height = H * dpr
-    canvas.style.width  = W + 'px'
-    canvas.style.height = H + 'px'
+    const SW = W * BOARD_SCALE
+    const SH = H * BOARD_SCALE
+    canvas.width  = SW * dpr
+    canvas.height = SH * dpr
+    canvas.style.width  = SW + 'px'
+    canvas.style.height = SH + 'px'
     const ctx = canvas.getContext('2d')!
-    ctx.scale(dpr, dpr)
+    ctx.scale(dpr * BOARD_SCALE, dpr * BOARD_SCALE)
 
     // Build peg list (for rendering)
     const pegs: { x: number; y: number; flash: number }[] = []
@@ -168,11 +172,16 @@ export default function GaltonBoard() {
       for (let i = 0; i < BINS; i++) {
         const bxc = binX(i)
         const bh  = (bins[i] / maxBins) * SCALE
-        ctx.fillStyle   = 'rgba(184,92,56,0.07)'
-        ctx.fillRect(bxc - barW / 2, BIN_TOP + BIN_HMAX - bh, barW, bh)
-        ctx.strokeStyle = 'rgba(184,92,56,0.18)'
+        if (bh < 0.5) continue
+        const by0 = BIN_TOP + BIN_HMAX - bh
+        const grad = ctx.createLinearGradient(0, by0, 0, by0 + bh)
+        grad.addColorStop(0, 'rgba(184,92,56,0.14)')
+        grad.addColorStop(1, 'rgba(184,92,56,0.04)')
+        ctx.fillStyle = grad
+        ctx.fillRect(bxc - barW / 2, by0, barW, bh)
+        ctx.strokeStyle = 'rgba(184,92,56,0.22)'
         ctx.lineWidth   = 0.5
-        ctx.strokeRect(bxc - barW / 2, BIN_TOP + BIN_HMAX - bh, barW, bh)
+        ctx.strokeRect(bxc - barW / 2, by0, barW, bh)
       }
 
       // ── Bell curve overlay (fades in as samples accumulate) ────────────────
@@ -192,9 +201,9 @@ export default function GaltonBoard() {
         }
         ctx.stroke()
 
-        // Crisp line
+        // Crisp line — thickens as curve matures
         ctx.strokeStyle = `rgba(184,92,56,${0.52 * op})`
-        ctx.lineWidth   = 1.3
+        ctx.lineWidth   = 1.0 + op * 0.7
         ctx.beginPath()
         for (let px = x0; px <= x1; px++) {
           const y = BIN_TOP + BIN_HMAX - bellY(px) * SCALE
@@ -223,6 +232,18 @@ export default function GaltonBoard() {
           ctx.textAlign = 'left'
         }
       }
+
+      // ── Entry funnel (two faint guide lines converging to first peg) ──────
+      ctx.strokeStyle = 'rgba(175,162,150,0.18)'
+      ctx.lineWidth   = 0.8
+      ctx.setLineDash([4, 5])
+      ctx.beginPath()
+      ctx.moveTo(CX - 22, PEG_TOP - 28)
+      ctx.lineTo(pegX(0, 0), pegY(0))
+      ctx.moveTo(CX + 22, PEG_TOP - 28)
+      ctx.lineTo(pegX(0, 0), pegY(0))
+      ctx.stroke()
+      ctx.setLineDash([])
 
       // ── Pegs ───────────────────────────────────────────────────────────────
       for (const p of pegs) {
@@ -255,12 +276,13 @@ export default function GaltonBoard() {
           ctx.fill()
         }
 
-        // Glow
-        const g = ctx.createRadialGradient(bx, by, 0, bx, by, 9)
-        g.addColorStop(0, 'rgba(184,92,56,0.22)')
+        // Glow — softer and wider
+        const g = ctx.createRadialGradient(bx, by, 0, bx, by, 13)
+        g.addColorStop(0, 'rgba(184,92,56,0.28)')
+        g.addColorStop(0.4, 'rgba(184,92,56,0.10)')
         g.addColorStop(1, 'rgba(184,92,56,0)')
         ctx.beginPath()
-        ctx.arc(bx, by, 9, 0, Math.PI * 2)
+        ctx.arc(bx, by, 13, 0, Math.PI * 2)
         ctx.fillStyle = g
         ctx.fill()
 
@@ -281,7 +303,7 @@ export default function GaltonBoard() {
   return (
     <canvas
       ref={canvasRef}
-      style={{ display: 'block', width: '100%', maxWidth: `${W}px`, height: 'auto' }}
+      style={{ display: 'block', width: '100%', maxWidth: `${Math.round(W * BOARD_SCALE)}px`, height: 'auto' }}
     />
   )
 }
